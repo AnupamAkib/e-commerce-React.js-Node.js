@@ -1,94 +1,40 @@
+require("dotenv").config();
+
 const http = require('node:http');
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+const express = require('express');
+const bodyParser = require('body-parser');
+const jsonParser = bodyParser.json();
+const app = express();
+const cors = require('cors')
+const mongoose = require('mongoose');
 
-
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'API Documentation',
-      version: '1.0.0',
-      description: 'A simple Express Library API',
-    },
-  },
-  // Path to the API docs
-  apis: ['./*.js'], // Adjust the path according to where your route files are located
-};
-
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-
-
-const PORT = process.env.PORT || 3000;
-
-var express = require('express');
-var app = express();
-
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-app.listen(PORT, () => {
-  console.log(`Server running...`);
-});
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.json());
 
 
 app.get("/", function (req, res) {
-    res.send("<h1>Server Running...</h1>");
+    res.send("<h1>Welcome,<br/> Server Running...</h1>");
 });
 
 
-/**
- * @swagger
- * /api/allUser:
- *   get:
- *     summary: Returns user information
- *     description: Retrieve a single user's information
- *     responses:
- *       200:
- *         description: A single user's information
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 name:
- *                   type: string
- *                   example: Anupam
- *                 age:
- *                   type: integer
- *                   example: 24
- */
-app.get("/api/allUser", function (req, res) {
-  res.send({
-    "name" : "anupam",
-    "age" : 24
+const PORT = process.env.PORT || 3000;
+const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
+
+
+mongoose
+  .connect(MONGO_CONNECTION_STRING)
+  .then(() => {
+    console.log("connected to MongoDB Atlas");
+    app.listen(PORT, () => {
+      console.log(`Node API app is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
   });
-});
 
-/**
- * @swagger
- * /api/products:
- *   get:
- *     summary: Returns products information
- *     description: Retrieve a products information
- *     responses:
- *       200:
- *         description: products information
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 name:
- *                   type: string
- *                   example: Anupam
- *                 age:
- *                   type: integer
- *                   example: 24
- */
-app.get("/api/products", function (req, res) {
-  res.send({
-    "name" : "asdsdfsdf",
-    "age" : 24,
-    "price" : "3490"
-  });
-});
+
+const userRoute = require("./routes/userRoute");
+
+app.use("/user", userRoute); //User Route
