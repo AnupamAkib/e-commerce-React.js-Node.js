@@ -9,9 +9,11 @@ const userSchema = mongoose.Schema(
             trim : true,
             validate : [
                 {
-                    validator: function(v) {
-                        // Custom validator function to check if the string contains only letters
-                        return /^[A-Za-z]+$/.test(v);
+                    validator: function(v) { // Custom validator function to check if the string contains only letters
+                        for(let i=0; i<v.length; i++){
+                            if(v[i] == ' ' || v[i] == '.') continue;
+                            if(!((v[i]>='a' && v[i]<='z') || (v[i]>='A' && v[i]<='Z'))) return false;
+                        }
                     },
                     message: "First name must contain only letters." //it will fire when validator function return false
                 },
@@ -29,9 +31,11 @@ const userSchema = mongoose.Schema(
             trim : true,
             validate : [
                 {
-                    validator: function(v) {
-                        // Custom validator function to check if the string contains only letters
-                        return /^[A-Za-z]+$/.test(v);
+                    validator: function(v) { // Custom validator function to check if the string contains only letters
+                        for(let i=0; i<v.length; i++){
+                            if(v[i] == ' ' || v[i] == '.') continue;
+                            if(!((v[i]>='a' && v[i]<='z') || (v[i]>='A' && v[i]<='Z'))) return false;
+                        }
                     },
                     message: "Last name must contain only letters."
                 },
