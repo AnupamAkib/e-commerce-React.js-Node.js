@@ -2,7 +2,7 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const md5 = require("md5");
 
-const jwt_token_expires_in = "3d"; //3 days
+const jwt_token_expires_in = "10h"; //10 hours
 
 const createUser = async(req, res) => {
     try{
@@ -66,10 +66,18 @@ const login = async(req, res) => { //Login using username/email and password
     }
 }
 
-const getAllUser = async(req, res) => {
+const getAllUsers = async(req, res) => {
     try{
         const _users = await User.find({});
         console.log(`${_users.length} user fetched`);
+
+        console.table({
+            username : req.username,
+            fullName : req.fullName,
+            emailAddress : req.emailAddress,
+            mongoose_id : req.id
+        });
+
         res.status(200).json(_users);
     }
     catch(error){
@@ -81,5 +89,5 @@ const getAllUser = async(req, res) => {
 module.exports = {
     login,
     createUser,
-    getAllUser
+    getAllUsers
 }
