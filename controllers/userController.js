@@ -78,7 +78,10 @@ const getAllUsers = async(req, res) => {
             mongoose_id : req.id
         });
 
-        res.status(200).json(_users);
+        res.status(200).json({
+            message : "success",
+            users : _users
+        });
     }
     catch(error){
         console.log(error.message);

@@ -36,5 +36,7 @@ mongoose
 
 
 const userRoute = require("./routes/userRoute");
+const productRoute = require("./routes/productRoute");
 
 app.use("/user", userRoute); //User Route
+app.use("/product", productRoute); //Product Route
