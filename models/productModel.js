@@ -7,6 +7,14 @@ const productSchema = mongoose.Schema(
             type : String,
             required : true,
             trim : true,
+            validate : [
+                {
+                    validator: function(v) {
+                        if(v.length > 10) return false;
+                    },
+                    message: props => `Product title is too large.`
+                }
+            ]
         },
         productDescription : {
             type : String,

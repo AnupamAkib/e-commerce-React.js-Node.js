@@ -10,9 +10,8 @@ const createProduct = async(req, res) => {
     }
     catch(error){
         console.log("error creating product!");
-        res.status(400).json({
-            message : "Error creating product"
-        });
+        const errors = Object.values(error.errors).map(err => err.message);
+        return res.status(400).json({ message : errors[0], errors }); //only send first error at once
     }
 }
 

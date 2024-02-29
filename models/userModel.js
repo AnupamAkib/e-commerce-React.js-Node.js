@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const md5 = require("md5");
+const {onlyAlphaLetters, onlyNumber, isLengthValid, isValidUsername, isValidPhoneNumber, isEmailValid} = require("../validation/inputValidation");
 
 const userSchema = mongoose.Schema(
     {
@@ -9,19 +10,13 @@ const userSchema = mongoose.Schema(
             trim : true,
             validate : [
                 {
-                    validator: function(v) { // Custom validator function to check if the string contains only letters
-                        for(let i=0; i<v.length; i++){
-                            if(v[i] == ' ' || v[i] == '.') continue;
-                            if(!((v[i]>='a' && v[i]<='z') || (v[i]>='A' && v[i]<='Z'))) return false;
-                        }
-                    },
+                    // Custom validator function to check if the string contains only letters (A-Z,a-z)
+                    validator : onlyAlphaLetters,
                     message: "First name must contain only letters." //it will fire when validator function return false
                 },
                 {
-                    validator: function(v) {
-                        if(v.length > 25) return false;
-                    },
-                    message: props => `The first name is too large.`
+                    validator: isLengthValid(0, 25),
+                    message: props => `First name should be less than 25 characters.`
                 }
             ]
         },
@@ -31,18 +26,11 @@ const userSchema = mongoose.Schema(
             trim : true,
             validate : [
                 {
-                    validator: function(v) { // Custom validator function to check if the string contains only letters
-                        for(let i=0; i<v.length; i++){
-                            if(v[i] == ' ' || v[i] == '.') continue;
-                            if(!((v[i]>='a' && v[i]<='z') || (v[i]>='A' && v[i]<='Z'))) return false;
-                        }
-                    },
+                    validator: onlyAlphaLetters,
                     message: "Last name must contain only letters."
                 },
                 {
-                    validator: function(v) {
-                        if(v.length > 25) return false;
-                    },
+                    validator: isLengthValid(0, 25),
                     message: props => `The last name is too large.`
                 }
             ]
@@ -52,32 +40,25 @@ const userSchema = mongoose.Schema(
             unique : true,
             required : true,
             trim : true,
-            //minlength: 6,
-            //maxlength: 25,
             validate: [
                 {
-                    validator: async function(v) { //check if already exist
+                    validator: async function(v) { //username should be unique. check if already exist
                         const existingUser = await this.constructor.findOne({ username: v });
                         return !existingUser;
                     },
                     message: props => `The username is already in use. Please choose a different one.`
                 },
                 {
-                    validator: function(v) { //check length of username
-                        if(v.length < 6 || v.length > 20){
-                            return false;
-                        }
-                    },
+                    validator: isLengthValid(6, 20),
                     message: props => `The username must contain 6 to 20 characters.`
                 },
-                {
-                    validator: function(v) { // Custom validator function to check if the string contains only numbers
-                        for(let i=0; i<v.length; i++){
-                            if((v[i]>='a' && v[i]<='z') || (v[i]>='A' && v[i]<='Z')) return true;
-                        }
-                        return false;
-                    },
-                    message: "Username must not contain only numbers."
+                { 
+                    validator: onlyNumber, //Custom validator function to check if the string contains only numbers
+                    message: "Username is not valid."
+                },
+                { 
+                    validator: isValidUsername, //Custom validator function to check if the string contains only numbers
+                    message: "Username is not valid."
                 }
             ]
         },
@@ -86,11 +67,7 @@ const userSchema = mongoose.Schema(
             required : true,
             validate : [
                 {
-                    validator: function(v) { //check length of username
-                        if(v.length < 6 || v.length > 20){
-                            return false;
-                        }
-                    },
+                    validator: isLengthValid(6, 20),
                     message: props => `The password must contain 6 to 20 characters.`
                 }
             ]
@@ -108,15 +85,7 @@ const userSchema = mongoose.Schema(
             trim : true,
             validate : [
                 {
-                    validator: function(v) {
-                        if(v.length != 11) return false;
-                        if(!(v[0]=='0' && v[1]=='1')) return false;
-                        for(let i=0; i<v.length; i++){
-                            if(!(v[i]>='0' && v[i]<='9')){
-                                return false;
-                            }
-                        }
-                    },
+                    validator: isValidPhoneNumber,
                     message: props => `Invalid Phone Number.`
                 }
             ]
@@ -128,23 +97,18 @@ const userSchema = mongoose.Schema(
             trim : true,
             validate: [
                 {
-                    validator: async function(v) {
+                    validator: async function(v) { //email address should be unique. check if already exist
                         const existingEmail = await this.constructor.findOne({ emailAddress: v });
                         return !existingEmail;
                     },
                     message: props => `The email is already in use. Please choose a different one.`
                 },
                 {
-                    validator: function(v) {
-                        if(v.length > 50) return false;
-                    },
+                    validator: isLengthValid(0, 50),
                     message: props => `The email is too large.`
                 },
                 {
-                    validator: function(v) {
-                        // Regular expression for email validation
-                        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-                    },
+                    validator: isEmailValid,
                     message: props => `Invalid email address.`
                 }
             ]
@@ -154,9 +118,7 @@ const userSchema = mongoose.Schema(
             required : false,
             validate : [
                 {
-                    validator: function(v) {
-                        if(v.length > 150) return false;
-                    },
+                    validator: isLengthValid(1, 200),
                     message: props => `The shipping address is too large.`
                 }
             ]
