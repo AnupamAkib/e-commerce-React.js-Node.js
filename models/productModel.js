@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const {isLengthValid, capitalizeFirstLetter} = require("../validation/inputValidation");
 
 
 const productSchema = mongoose.Schema(
@@ -9,9 +10,7 @@ const productSchema = mongoose.Schema(
             trim : true,
             validate : [
                 {
-                    validator: function(v) {
-                        if(v.length > 10) return false;
-                    },
+                    validator: isLengthValid(0, 100), 
                     message: props => `Product title is too large.`
                 }
             ]
@@ -20,16 +19,28 @@ const productSchema = mongoose.Schema(
             type : String,
             required : true,
             trim : true,
+            validate : [
+                {
+                    validator : isLengthValid(0, 500),
+                    message: props => `Product Description is too large`
+                }
+            ]
         },
         productBrand : {
             type : String,
-            default : "No Brand",
+            default : "Unknown",
             trim : true,
+            validate : [
+                {
+                    validator : isLengthValid(0, 50),
+                    message: props => `Product Brand is too large`
+                }
+            ]
         },
         productPrice : {
             type : Number,
             required : true,
-            trim : true,
+            trim : true
         },
         productPicture : {
             type : mongoose.Schema.Types.Mixed, //json file
@@ -40,8 +51,8 @@ const productSchema = mongoose.Schema(
         },
         productTags : {
             type : [String],
-            default : [],
             required : true,
+            default : [],
             trim : true,
         },
         deliveryFee : {
@@ -55,7 +66,7 @@ const productSchema = mongoose.Schema(
         },
         customerFeedback : {
             type : [{
-                customerName : String,
+                customerUsername : String,
                 customerComment : String,
                 customerRating : Number
             }],
@@ -66,6 +77,13 @@ const productSchema = mongoose.Schema(
         timestamps : true
     }
 );
+
+// Middleware to capitalize first character of productTitle
+productSchema.pre('save', function(next) {
+    this.productTitle = capitalizeFirstLetter(this.productTitle);
+    next();
+});
+
 
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

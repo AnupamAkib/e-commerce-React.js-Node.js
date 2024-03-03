@@ -1,3 +1,6 @@
+const mongoose = require("mongoose");
+const User = require("../models/userModel");
+
 const onlyAlphaLetters = (v) => {
     for(let i=0; i<v.length; i++){
         if(v[i] == ' ' || v[i] == '.') continue;
@@ -41,11 +44,17 @@ const isEmailValid = (v) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
+// Function to capitalize the first letter of each word
+function capitalizeFirstLetter(str) {
+    return str.replace(/\b\w/g, char => char.toUpperCase());
+}
+
 module.exports = {
     onlyAlphaLetters,
     isLengthValid,
     onlyNumber,
     isValidUsername,
     isValidPhoneNumber,
-    isEmailValid
+    isEmailValid,
+    capitalizeFirstLetter
 }

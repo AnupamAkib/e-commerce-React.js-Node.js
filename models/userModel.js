@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const md5 = require("md5");
-const {onlyAlphaLetters, onlyNumber, isLengthValid, isValidUsername, isValidPhoneNumber, isEmailValid} = require("../validation/inputValidation");
+const {onlyAlphaLetters, onlyNumber, isLengthValid, isValidUsername, isValidPhoneNumber, isEmailValid, capitalizeFirstLetter} = require("../validation/inputValidation");
 
 const userSchema = mongoose.Schema(
     {
@@ -140,11 +140,6 @@ userSchema.pre('save', function(next) {
     this.password = md5(this.password);
     next();
 });
-
-// Function to capitalize the first letter of each word
-function capitalizeFirstLetter(str) {
-    return str.replace(/\b\w/g, char => char.toUpperCase());
-}
 
 // Define a virtual property for fullName
 userSchema.virtual('fullName').get(function() {
