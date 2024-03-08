@@ -64,13 +64,17 @@ const productSchema = mongoose.Schema(
             type : Number,
             default : 0
         },
-        customerFeedback : {
+        customerFeedback : { //it will moved to order model
             type : [{
                 customerUsername : String,
                 customerComment : String,
                 customerRating : Number
             }],
             default : []
+        },
+        rating : { //it will derived from order schema
+            type : Number,
+            default : 0
         }
     },
     {
