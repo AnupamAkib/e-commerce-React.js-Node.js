@@ -35,8 +35,13 @@ mongoose
   });
 
 
+
 const userRoute = require("./routes/userRoute");
 const productRoute = require("./routes/productRoute");
+const orderRoute = require("./routes/orderRoute");
 
 app.use("/user", userRoute); //User Route
 app.use("/product", productRoute); //Product Route
+app.use("/order", orderRoute); //Order Route
+
+
