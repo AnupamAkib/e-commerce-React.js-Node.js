@@ -7,20 +7,54 @@ const orderSchema = mongoose.Schema(
     {
         productID : {
             type : String,
-            required : true
+            required : true,
+            trim : true,
+            validate : [
+                {
+                    validator: async function(v){
+                        const _product = await Product.findOne({_id : v});
+                        if(_product == null) return false;
+                        else return true;
+                    },
+                    message: props => `product doesn't exist`
+                }
+            ]
         },
         username : {
             type : String,
-            required : true
+            required : true,
+            trim : true,
+            validate : [
+                {
+                    validator: async function(v){
+                        const _user = await User.findOne({username : v});
+                        if(_user == null) return false;
+                        else return true;
+                    },
+                    message: props => `user doesn't exist`
+                }
+            ]
         },
         quantity : {
             type : Number,
-            required : true
+            required : true,
+            validate : [
+                {
+                    validator: function(v){
+                        if(v < 1) return false;
+                        else return true;
+                    },
+                    message: props => `quantity should be a positive number`
+                }
+            ]
         },
         unitPrice : {
             type : Number
         },
         deliveryFee : {
+            type : Number
+        },
+        totalPrice : {
             type : Number
         },
         deliveryAddress : {
@@ -50,6 +84,8 @@ orderSchema.pre('save', async function(next){
     this.currentStatus = "Order Placed";
 
     this.deliveryFee = product.deliveryFee;
+
+    this.totalPrice = (product.productPrice * this.quantity) + product.deliveryFee;
 
     next();
 });
