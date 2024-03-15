@@ -33,7 +33,32 @@ const getAllProducts = async(req, res) => {
     }
 }
 
+const getSingleProduct = async(req, res) => {
+    const productID = req.query.id;
+    try{
+        const _product = await Product.findOne({_id : productID});
+        if(_product != null){
+            res.status(200).json({
+                message : "success",
+                product : _product
+            });
+        }
+        else{
+            res.status(404).json({
+                message : "Product not found"
+            });
+        }
+    }
+    catch(error){
+        res.status(400).json({
+            message : "Bad request",
+            error : error
+        });
+    }
+}
+
 module.exports = {
     createProduct,
-    getAllProducts
+    getAllProducts,
+    getSingleProduct
 }
