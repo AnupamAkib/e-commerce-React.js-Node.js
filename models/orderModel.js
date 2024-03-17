@@ -95,6 +95,15 @@ orderSchema.post('save', async function(doc, next){
     if(this.deliveryAddress == null || this.deliveryAddress == ""){
         this.deliveryAddress = user.shippingAddress;
     }
+    /*const _product = await Product.findOne({_id : this.productID});
+    const _CurrentSellCount = _product.sellCount + 1;
+    if(_product){
+        const update = {
+            sellCount: _CurrentSellCount
+        };
+        const updatedSellCount = await _product.findOneAndUpdate({_id : this.productID}, update, { new: true }).exec();
+        console.log('Product sell count updated:', updatedSellCount);
+    }*/
     next();
 ;});
 
