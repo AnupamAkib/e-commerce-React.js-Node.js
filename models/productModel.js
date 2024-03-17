@@ -63,18 +63,6 @@ const productSchema = mongoose.Schema(
         sellCount : {
             type : Number,
             default : 0
-        },
-        /*customerFeedback : { //it will be fetched from order //derived properties. need to go to pre middleware
-            type : [{
-                customerUsername : String,
-                customerComment : String,
-                customerRating : Number
-            }],
-            default : []
-        },*/
-        rating : { //it will derived from order schema //derived properties. need to go to pre middleware
-            type : Number,
-            default : 0
         }
     },
     {
@@ -88,12 +76,36 @@ productSchema.pre('save', function(next) {
     next();
 });
 
-// Define a virtual property for customerFeedback
-productSchema.virtual('customerFeedback').get(async function() {
-    const Feedback = require("../models/feedbackModel");
-    const _feedback = await Feedback.find({productID : this._id});
-    return _feedback;
+productSchema.virtual('customerFeedback', {
+    ref: 'Feedback', // Reference to the Feedback model
+    localField: '_id', // Field from this model
+    foreignField: 'productID', // Field from the referenced model
+    justOne: false // Set to false if you expect multiple feedback per product
 });
+
+productSchema.virtual('averageRating').get(function() {
+    try{
+        const customerFeedback = this.customerFeedback;
+        if (!customerFeedback || !customerFeedback.length) {
+            return "0"; // Return 0 if no feedback found
+        }
+        let sum = 0, len = customerFeedback.length;
+        for(let i=0; i<len; i++){
+            sum += customerFeedback[i].rating;
+        }
+        let avg = sum/len;
+        console.log("avg = " + avg);
+        return avg.toFixed(2);
+    }
+    catch(error){
+        console.error("Error fetching feedback:", error);
+        return [];
+    }
+});
+
+//enable virual property 
+productSchema.set('toObject', { virtuals: true });
+productSchema.set('toJSON', { virtuals: true });
 
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

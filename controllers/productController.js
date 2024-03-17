@@ -36,7 +36,7 @@ const getAllProducts = async(req, res) => {
 const getSingleProduct = async(req, res) => {
     const productID = req.query.id;
     try{
-        const _product = await Product.findOne({_id : productID});
+        const _product = await Product.findOne({_id : productID}).populate('customerFeedback');
         if(_product != null){
             res.status(200).json({
                 message : "success",

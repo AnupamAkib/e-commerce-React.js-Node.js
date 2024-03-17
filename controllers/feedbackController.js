@@ -2,12 +2,10 @@ const Feedback = require("../models/feedbackModel");
 
 const giveFeedback = async (req, res) => {
     const orderID = req.body.orderID;
-    const productID = req.body.productID;
-    const username = req.body.username;
     const comment = req.body.comment;
     const rating = req.body.rating
     try{
-        const _feedback = await Feedback.create({orderID, productID, username, comment, rating});
+        const _feedback = await Feedback.create({orderID, comment, rating});
         console.log("feedback submitted successfully");
         res.status(200).json({
             message : "success",
