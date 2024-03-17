@@ -64,13 +64,17 @@ const productSchema = mongoose.Schema(
             type : Number,
             default : 0
         },
-        customerFeedback : {
+        /*customerFeedback : { //it will be fetched from order //derived properties. need to go to pre middleware
             type : [{
                 customerUsername : String,
                 customerComment : String,
                 customerRating : Number
             }],
             default : []
+        },*/
+        rating : { //it will derived from order schema //derived properties. need to go to pre middleware
+            type : Number,
+            default : 0
         }
     },
     {
@@ -84,6 +88,12 @@ productSchema.pre('save', function(next) {
     next();
 });
 
+// Define a virtual property for customerFeedback
+productSchema.virtual('customerFeedback').get(async function() {
+    const Feedback = require("../models/feedbackModel");
+    const _feedback = await Feedback.find({productID : this._id});
+    return _feedback;
+});
 
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

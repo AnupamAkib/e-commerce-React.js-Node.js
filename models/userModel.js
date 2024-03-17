@@ -115,7 +115,7 @@ const userSchema = mongoose.Schema(
         },
         shippingAddress : {
             type : String,
-            required : false,
+            required : true,
             validate : [
                 {
                     validator: isLengthValid(1, 200),

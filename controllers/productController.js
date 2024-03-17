@@ -33,53 +33,32 @@ const getAllProducts = async(req, res) => {
     }
 }
 
-const giveUserFeedback = async(req, res) => {
-    const productID = req.body.productID;
-    const user = req.body.username; //will receive from jwt token
-    const comment = req.body.comment;
-    const rating = req.body.rating;
-
-    console.log({productID, user, comment, rating});
- 
+const getSingleProduct = async(req, res) => {
+    const productID = req.query.id;
     try{
-        const isExistUser = await User.findOne({username: user});
-        const isExistProduct = await Product.findOne({_id: productID});
-
-        if(isExistUser && isExistProduct){
-            //code to insert feedback;
-            const userFeedback = {
-                customerUsername: user,
-                customerComment: comment,
-                customerRating: rating
-            }
-            Product.findByIdAndUpdate(
-                productID,
-                {
-                    $push: {customerFeedback: userFeedback}
-                },
-                {new : true}
-            )
-            .then(updatedProduct => {
-                if(updatedProduct){ //product found & updated
-                    res.status(200).json({message : "success", product : updatedProduct});
-                }
-                else{ //product not found
-                    res.status(404).json({message : "Operation Unsuccessful"});
-                }
-            })
+        const _product = await Product.findOne({_id : productID});
+        if(_product != null){
+            res.status(200).json({
+                message : "success",
+                product : _product
+            });
         }
         else{
-            res.status(404).json({message : "Operation Unsuccessful"});
+            res.status(404).json({
+                message : "Product not found"
+            });
         }
     }
     catch(error){
-        console.log("internal server error!");
-        res.status(500).json({message : "Operation Unsuccessful"});
+        res.status(400).json({
+            message : "Bad request",
+            error : error
+        });
     }
 }
 
 module.exports = {
     createProduct,
     getAllProducts,
-    giveUserFeedback
+    getSingleProduct
 }
