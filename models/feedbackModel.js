@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const {isLengthValid} = require("../validation/inputValidation");
 
 const Order = require("../models/orderModel");
 
@@ -17,7 +18,13 @@ const feedbackSchema = mongoose.Schema(
         },
         comment : {
             type : String,
-            trim : true
+            trim : true,
+            validate : [
+                {
+                    validator : isLengthValid(0, 100),
+                    message : props => `Comment is too large`
+                }
+            ]
         },
         rating : {
             type : Number,
