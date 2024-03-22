@@ -20,7 +20,7 @@ const getAllProducts = async(req, res) => {
     try{
         const _products = await Product.find({});
         console.log(`${_products.length} products fetched`);
-        res.status(400).json({
+        res.status(200).json({
             message : "success",
             products : _products
         });
@@ -37,6 +37,8 @@ const getSingleProduct = async(req, res) => {
     const productID = req.query.id;
     try{
         const _product = await Product.findOne({_id : productID}).populate('customerFeedback');
+        const soldCnt = await _product.findSoldCount();
+        _product.sellCount = soldCnt;
         if(_product != null){
             res.status(200).json({
                 message : "success",

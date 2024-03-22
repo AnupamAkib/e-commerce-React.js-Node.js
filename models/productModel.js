@@ -60,9 +60,9 @@ const productSchema = mongoose.Schema(
             trim : true,
             default : 0
         },
-        sellCount : {
+        sellCount: {
             type : Number,
-            default : 0
+            default: 0
         }
     },
     {
@@ -71,7 +71,7 @@ const productSchema = mongoose.Schema(
 );
 
 // Middleware to capitalize first character of productTitle
-productSchema.pre('save', function(next) {
+productSchema.pre('save', async function(next) {
     this.productTitle = capitalizeFirstLetter(this.productTitle);
     next();
 });
@@ -102,6 +102,20 @@ productSchema.virtual('averageRating').get(function() {
         return [];
     }
 });
+
+productSchema.methods.findSoldCount = async function(next){
+    const _order = require("../models/orderModel");
+    const allOrders = await _order.find({productID : this.id});
+    const len = allOrders.length;
+    console.log(len);
+    let cnt = 0;
+    for(let i=0; i<len; i++){
+        cnt += allOrders[i].quantity;
+    }
+    return cnt;
+}
+
+
 
 //enable virual property 
 productSchema.set('toObject', { virtuals: true });
