@@ -41,7 +41,25 @@ const getSingleOrderByID = async(req, res) => {
     }
 }
 
+const getOrdersByUser = async(req, res) => {
+    const username = req.query.username;
+    try{
+        const _orders = await Order.find({username : username});
+        res.status(200).json({
+            message : "success",
+            orders : _orders
+        });
+    }
+    catch(error){
+        res.status(400).json({
+            message : "Failed",
+            error : error
+        });
+    }
+}
+
 module.exports = {
     placeOrder,
-    getSingleOrderByID
+    getSingleOrderByID,
+    getOrdersByUser
 }
