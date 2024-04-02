@@ -24,6 +24,24 @@ const placeOrder = async(req, res) => {
     }
 }
 
+const getSingleOrderByID = async(req, res) => {
+    const orderID = req.query.orderID;
+    try{
+        const _order = await Order.findOne({_id : orderID});
+        res.status(200).json({
+            message : "success",
+            order : _order
+        });
+    }
+    catch(error){
+        res.status(400).json({
+            message : "Failed",
+            error : error
+        });
+    }
+}
+
 module.exports = {
-    placeOrder
+    placeOrder,
+    getSingleOrderByID
 }
