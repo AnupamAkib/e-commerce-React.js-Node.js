@@ -1,0 +1,14 @@
+.login{
+    background-color: #f0f0f0;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.textField{
+    width: 100%;
+    padding: 7px;
+    margin: 4px 0px 4px 0px;
+    font-size: large;
+    border-radius: 5px;
+    border: 0px;
+}
