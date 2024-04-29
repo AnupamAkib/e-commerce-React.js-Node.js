@@ -2,32 +2,41 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 import "./UserLogin.css"
 
 export default function UserLogin(){
+    const navigate = useNavigate();
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    let toast = require("./../../toast_bar");
+
     const login = (e) => {
         e.preventDefault();
-        console.log(process.env.BACKEND_URL);
-        
+
         try{
-            axios.post("https://pear-centipede-yoke.cyclic.app/user/login", {
+            axios.post(`${process.env.REACT_APP_BACKEND_URL}/user/login`, {
                 username : username,
                 email : username,
                 password : password
             })
             .then((resposnse) => {
                 console.log(resposnse.data);
+                toast.msg(resposnse.data.message, "green", 3000);
+                navigate("/user/profile");
             },
             (err) => {
                 console.log("An error occured!");
+                console.log(err);
+                toast.msg("Incorrect credential", "red", 2500);
             });
         }
         catch(error){
             console.log("Opps!, an error occured!");
+            toast.msg("Opps!, an error occured!", "red", 2500);
         }
 
         console.log(username);
